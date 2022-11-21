@@ -35,7 +35,7 @@ if __name__ == '__main__':
     m = sparse_input_matrix.shape[0]
     k = 32 #列向量个数
     size = k / thread_num
-    rhs = tf.random.uniform([m,k],0.0,100.0,tf.float64)
+    rhs = tf.random.uniform([m,k],0,100,tf.float64)
     threads = []
     print(rhs)
     #切分数据，分块
