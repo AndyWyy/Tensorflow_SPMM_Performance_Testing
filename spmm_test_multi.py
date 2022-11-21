@@ -35,11 +35,13 @@ if __name__ == '__main__':
     m = sparse_input_matrix.shape[0]
     k = 32 #列向量个数
     size = k / thread_num
-    rhs = tf.random.uniform([m,k],0.0,2147483647.0,tf.float64)
+    rhs = tf.random.uniform([m,k],0.0,100.0,tf.float64)
     threads = []
     print(rhs)
+    #切分数据，分块
     for i in range(thread_num):
         tmp_matrix = tf.slice(rhs,[int(0),int(i*size)],[int(rhs.shape[0]),int(size)])
+        print(tmp_matrix)
         q.put(tmp_matrix)
         print(i)
     start_time = time.time()
@@ -50,13 +52,17 @@ if __name__ == '__main__':
         threads[i].start()
     for i in range(thread_num):
         threads[i].join()
-    out_put = sub_matrix_out.get():
+    out_put = sub_matrix_out.get()
+    #合并矩阵
     for i in range(thread_num - 1):
         tmp = sub_matrix_out.get()
-        out_put = tf.concat(out_put,tmp,1)
+        out_put = tf.concat([out_put,tmp],1)
+    print(out_put)
+    print(tf.sparse.sparse_dense_matmul(sparse_input_matrix,rhs))
     end_time = time.time()
     print('spmm total time : ',round(end_time - start_time, 10),'secs')
 
 
 
     
+
