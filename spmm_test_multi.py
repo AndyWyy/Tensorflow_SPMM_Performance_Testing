@@ -15,23 +15,25 @@ def convert_sparse_matrix_to_sparse_tensor(X):
     indices = np.mat([coo.row, coo.col]).transpose()
     return tf.SparseTensor(indices, coo.data, coo.shape)
 
-def work(q, sparse_input_matrix):
+def work(q, sparse_input_matrix, sub_matrix_out):
     while True:
         if q.empty():
             return
         else:
             rhs = q.get()
             out_put = tf.sparse.sparse_dense_matmul(sparse_input_matrix,rhs)
+            sub_matrix_out.put(out_put)
 
 if __name__ == '__main__':
     filename = sys.argv[1]
     input_matrix = scipy.io.mmread(filename)
     print(input_matrix)
-    thread_num = 4
+    thread_num = 4 # 线程数
+    sub_matrix_out = queue.Queue(thread_num)
     q = queue.Queue(thread_num)
     sparse_input_matrix = convert_sparse_matrix_to_sparse_tensor(input_matrix)
     m = sparse_input_matrix.shape[0]
-    k = 32
+    k = 32 #列向量个数
     size = k / thread_num
     rhs = tf.random.uniform([m,k],0.0,2147483647.0,tf.float64)
     threads = []
@@ -41,13 +43,17 @@ if __name__ == '__main__':
         q.put(tmp_matrix)
         print(i)
     start_time = time.time()
-    for i in range (thread_num):
-        t = threading.Thread(target=work,args=[q,sparse_input_matrix,])
+    for i in range(thread_num):
+        t = threading.Thread(target=work,args=[q,sparse_input_matrix,sub_matrix_out])
         threads.append(t)
-    for i in range (thread_num):
+    for i in range(thread_num):
         threads[i].start()
-    for i in range (thread_num):
+    for i in range(thread_num):
         threads[i].join()
+    out_put = sub_matrix_out.get():
+    for i in range(thread_num - 1):
+        tmp = sub_matrix_out.get()
+        out_put = tf.concat(out_put,tmp,1)
     end_time = time.time()
     print('spmm total time : ',round(end_time - start_time, 10),'secs')
 
