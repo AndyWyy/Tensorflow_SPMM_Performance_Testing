@@ -53,12 +53,12 @@ if __name__ == '__main__':
     for i in range(thread_num):
         threads[i].join()
     out_put = sub_matrix_out.get()
-    #合并矩阵
+    #合并矩阵 
     for i in range(thread_num - 1):
         tmp = sub_matrix_out.get()
         out_put = tf.concat([out_put,tmp],1)
     print(out_put)
-    print(tf.sparse.sparse_dense_matmul(sparse_input_matrix,rhs))
+    print(tf.sparse.sparse_dense_matmul(sparse_input_matrix,rhs)) #结果有时候对不上？
     end_time = time.time()
     print('spmm total time : ',round(end_time - start_time, 10),'secs')
 
