@@ -21,7 +21,7 @@ python spmm_test.py xxx.mtx
 #把文件中第三行注释打开即可
 python spmm_test.py xxx.mtx
 #多线程 方法类似
-python spmm_test.py xxx.mtx
+python spmm_test_multi.py xxx.mtx
 ```
 
 # 已知问题
