@@ -1,6 +1,6 @@
 import scanpy as sc
 import os 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import tensorflow as tf 
 import numpy as np
 import scipy as scipy
@@ -18,16 +18,7 @@ def convert_sparse_matrix_to_sparse_tensor(X):
 
 if __name__ == '__main__':
     filename = sys.argv[1]
-    cpu = tf.config.list_physical_devices("CPU")
-    tf.config.set_visible_devices(cpu)
     print(tf.config.list_physical_devices())
-    tf.config.threading.set_intra_op_parallelism_threads(num_threads=1)
-    # config = tf.compat.v1.ConfigProto(inter_op_parallelism_threads = 64, intra_op_parallelism_threads = 64)
-    # sess  = tf.compat.v1.Session(config = config)
-
-
-    #a_input_matrix = sc.read(filename)
-    #input_matrix = a_input_matrix.X
     input_matrix = scipy.io.mmread(filename)
     print(input_matrix)
     #sparse_input_matrix = get_sparse_tensor(input_matrix)
